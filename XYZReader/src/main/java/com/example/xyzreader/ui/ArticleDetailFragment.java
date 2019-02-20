@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
@@ -33,6 +34,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
+import com.example.xyzreader.utils.ImageLoaderHelper;
 
 /**
  * A fragment representing a single Article detail screen. This fragment is
@@ -167,6 +169,7 @@ public class ArticleDetailFragment extends Fragment implements
                     (int) (Color.blue(mMutedColor) * 0.9));
         }
         mStatusBarColorDrawable.setColor(color);
+
         mDrawInsetsFrameLayout.setInsetBackground(mStatusBarColorDrawable);
     }
 

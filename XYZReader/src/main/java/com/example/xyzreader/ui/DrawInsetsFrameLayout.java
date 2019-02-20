@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -31,9 +32,9 @@ import com.example.xyzreader.R;
 
 public class DrawInsetsFrameLayout extends FrameLayout {
     private Drawable mInsetBackground;
-    private Drawable mTopInsetBackground;
-    private Drawable mBottomInsetBackground;
-    private Drawable mSideInsetBackground;
+    //private Drawable mTopInsetBackground;
+    //private Drawable mBottomInsetBackground;
+    //private Drawable mSideInsetBackground;
 
     private Rect mInsets;
     private Rect mTempRect = new Rect();
