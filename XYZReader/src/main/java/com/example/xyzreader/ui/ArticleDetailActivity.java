@@ -13,7 +13,11 @@ import android.support.v4.view.ViewPager;
 //import android.support.v7.app.ActionBarActivity;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -50,27 +54,22 @@ public class ArticleDetailActivity extends AppCompatActivity
         }
         setContentView(R.layout.activity_article_detail);
 
-        // tbd
-        NestedScrollView scrollView = findViewById (R.id.detailed_nested_scroll_view);
-        scrollView.setFillViewport (true);
-        // tbd
-
         getLoaderManager().initLoader(0, null, this);
 
         mPagerAdapter = new MyPagerAdapter(getFragmentManager());
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mPagerAdapter);
-        mPager.setPageMargin((int) TypedValue
+        /*mPager.setPageMargin((int) TypedValue
                 .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()));
-        mPager.setPageMarginDrawable(new ColorDrawable(0x22000000));
+        mPager.setPageMarginDrawable(new ColorDrawable(0x22000000));*/
 
         mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageScrollStateChanged(int state) {
                 super.onPageScrollStateChanged(state);
-                mUpButton.animate()
+                /*mUpButton.animate()
                         .alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f)
-                        .setDuration(300);
+                        .setDuration(300);*/
             }
 
             @Override
@@ -79,21 +78,21 @@ public class ArticleDetailActivity extends AppCompatActivity
                     mCursor.moveToPosition(position);
                 }
                 mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
-                updateUpButtonPosition();
+                //updateUpButtonPosition();
             }
         });
 
-        mUpButtonContainer = findViewById(R.id.up_container);
+        //mUpButtonContainer = findViewById(R.id.up_container);
 
-        mUpButton = findViewById(R.id.action_up);
+/*        mUpButton = findViewById(R.id.action_up);
         mUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onSupportNavigateUp();
             }
-        });
+        });*/
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+/*        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mUpButtonContainer.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
                 public WindowInsets onApplyWindowInsets(View view, WindowInsets windowInsets) {
@@ -104,13 +103,19 @@ public class ArticleDetailActivity extends AppCompatActivity
                     return windowInsets;
                 }
             });
-        }
+        }*/
+
 
         if (savedInstanceState == null) {
             if (getIntent() != null && getIntent().getData() != null) {
                 mStartId = ItemsContract.Items.getItemId(getIntent().getData());
                 mSelectedItemId = mStartId;
             }
+        }
+
+        Toolbar toolbar = findViewById(R.id.detailed_toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
         }
     }
 
@@ -124,19 +129,29 @@ public class ArticleDetailActivity extends AppCompatActivity
         mCursor = cursor;
         mPagerAdapter.notifyDataSetChanged();
 
+        mPager.setCurrentItem(2);
+
         // Select the start ID
+        int position = 0;
+
         if (mStartId > 0) {
             mCursor.moveToFirst();
             // TODO: optimize
             while (!mCursor.isAfterLast()) {
                 if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
-                    final int position = mCursor.getPosition();
+                    position = mCursor.getPosition();
                     mPager.setCurrentItem(position, false);
+                    Log.d("kissa", "calling setCurrentItem with position: " + position);
                     break;
                 }
                 mCursor.moveToNext();
             }
             mStartId = 0;
+        }
+
+        int pos = mPager.getCurrentItem();
+        if (mPagerAdapter.getItem(pos).getUserVisibleHint() && mPagerAdapter.getItem(pos).isVisible()) {
+            mPagerAdapter.getItem(pos).setMenuVisibility(true);
         }
     }
 
@@ -146,7 +161,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         mPagerAdapter.notifyDataSetChanged();
     }
 
-    public void onUpButtonFloorChanged(long itemId, ArticleDetailFragment fragment) {
+/*    public void onUpButtonFloorChanged(long itemId, ArticleDetailFragment fragment) {
         if (itemId == mSelectedItemId) {
             mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
             updateUpButtonPosition();
@@ -156,21 +171,45 @@ public class ArticleDetailActivity extends AppCompatActivity
     private void updateUpButtonPosition() {
         int upButtonNormalBottom = mTopInset + mUpButton.getHeight();
         mUpButton.setTranslationY(Math.min(mSelectedItemUpButtonFloor - upButtonNormalBottom, 0));
+    }*/
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("kissa", "onBackPressed: finished");
+        finish();
+    }
+
+
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
+
+        int lastPosition;
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            super.setPrimaryItem(container, position, object);
-            ArticleDetailFragment fragment = (ArticleDetailFragment) object;
-            if (fragment != null) {
-                mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
-                updateUpButtonPosition();
+
+            if (lastPosition != position) {
+                super.setPrimaryItem(container, position, object);
+                lastPosition = position;
             }
+
+            //ArticleDetailFragment fragment = (ArticleDetailFragment) object;
+            //if (fragment != null) {
+                //mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
+                //updateUpButtonPosition();
+            //}
         }
 
         @Override
