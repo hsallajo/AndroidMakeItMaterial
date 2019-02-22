@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- list -->
+    <integer name="list_column_count">1</integer>
+    <!-- detail -->
+    <integer name="fab_hidey_threshold">160</integer>
+</resources>

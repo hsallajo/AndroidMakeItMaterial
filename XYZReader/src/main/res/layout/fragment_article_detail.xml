@@ -106,24 +106,24 @@
                 android:paddingTop="@dimen/detail_metabar_vert_padding"
                 android:paddingBottom="@dimen/detail_body_bottom_margin"
                 android:textColor="@color/colorSecondaryText"
-                android:textColorLink="@color/colorPrimary"
+                android:textColorLink="@color/colorAccent"
                 android:textSize="@dimen/detail_body_text_size" />
 
         </com.example.xyzreader.ui.MaxWidthLinearLayout>
 
     </com.example.xyzreader.ui.ObservableScrollView>
 
-    <ImageButton
-        android:id="@+id/share_fab"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom|end"
-        android:layout_marginRight="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:background="@drawable/add_fab_background"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:elevation="6dp"
+        app:rippleColor="@color/colorAccentDark"
+        app:pressedTranslationZ="12dp"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin"
         android:contentDescription="@string/action_share"
-        android:elevation="@dimen/fab_elevation"
+        android:stateListAnimator="@animator/fab_state_list_anim"
         android:src="@drawable/ic_share"
-        android:stateListAnimator="@anim/fab_state_list_anim" />
-
+        android:background="@drawable/oval_ripple"/>
 </android.support.design.widget.CoordinatorLayout>
