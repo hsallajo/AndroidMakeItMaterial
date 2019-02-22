@@ -67,9 +67,9 @@ public class ArticleDetailActivity extends AppCompatActivity
             @Override
             public void onPageScrollStateChanged(int state) {
                 super.onPageScrollStateChanged(state);
-                /*mUpButton.animate()
+                mUpButton.animate()
                         .alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f)
-                        .setDuration(300);*/
+                        .setDuration(300);
             }
 
             @Override
@@ -82,15 +82,15 @@ public class ArticleDetailActivity extends AppCompatActivity
             }
         });
 
-        //mUpButtonContainer = findViewById(R.id.up_container);
+        mUpButtonContainer = findViewById(R.id.up_container);
 
-/*        mUpButton = findViewById(R.id.action_up);
+        mUpButton = findViewById(R.id.action_up);
         mUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onSupportNavigateUp();
             }
-        });*/
+        });
 
 /*        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mUpButtonContainer.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
@@ -113,10 +113,6 @@ public class ArticleDetailActivity extends AppCompatActivity
             }
         }
 
-        Toolbar toolbar = findViewById(R.id.detailed_toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-        }
     }
 
     @Override
@@ -161,7 +157,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         mPagerAdapter.notifyDataSetChanged();
     }
 
-/*    public void onUpButtonFloorChanged(long itemId, ArticleDetailFragment fragment) {
+   /* public void onUpButtonFloorChanged(long itemId, ArticleDetailFragment fragment) {
         if (itemId == mSelectedItemId) {
             mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
             updateUpButtonPosition();
@@ -173,19 +169,10 @@ public class ArticleDetailActivity extends AppCompatActivity
         mUpButton.setTranslationY(Math.min(mSelectedItemUpButtonFloor - upButtonNormalBottom, 0));
     }*/
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return false;
-    }
 
     @Override
     public void onBackPressed() {
-        Log.d("kissa", "onBackPressed: finished");
+        Log.d("kissa", "onBackPressed: ");
         finish();
     }
 
@@ -205,11 +192,11 @@ public class ArticleDetailActivity extends AppCompatActivity
                 lastPosition = position;
             }
 
-            //ArticleDetailFragment fragment = (ArticleDetailFragment) object;
-            //if (fragment != null) {
-                //mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
-                //updateUpButtonPosition();
-            //}
+/*            ArticleDetailFragment fragment = (ArticleDetailFragment) object;
+            if (fragment != null) {
+                mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
+                updateUpButtonPosition();
+            }*/
         }
 
         @Override

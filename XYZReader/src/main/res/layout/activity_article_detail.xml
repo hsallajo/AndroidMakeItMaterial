@@ -1,5 +1,4 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,23 +8,12 @@
         android:layout_height="match_parent"
         android:layout_marginTop="24dp"/>
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/detailed_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        app:navigationIcon="?homeAsUpIndicator"
-        app:contentInsetStart="72dp"
-        app:layout_collapseMode="pin"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="@string/app_name"
-        android:layout_marginTop="24dp"/>
-
-<!--    <FrameLayout
+    <FrameLayout
         android:id="@+id/up_container"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        android:background="@android:color/transparent">
+        android:background="@android:color/transparent"
+        android:layout_marginTop="24dp">
 
         <ImageButton
             android:id="@+id/action_up"
@@ -35,5 +23,5 @@
             android:contentDescription="@string/up"
             android:src="@drawable/ic_arrow_back"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
-    </FrameLayout>-->
+    </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>
