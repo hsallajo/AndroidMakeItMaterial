@@ -105,8 +105,8 @@
                 android:lineSpacingMultiplier="@fraction/detail_body_line_spacing_multiplier"
                 android:paddingTop="@dimen/detail_metabar_vert_padding"
                 android:paddingBottom="@dimen/detail_body_bottom_margin"
-                android:textColor="@color/ltgray"
-                android:textColorLink="@color/theme_accent"
+                android:textColor="@color/colorSecondaryText"
+                android:textColorLink="@color/colorPrimary"
                 android:textSize="@dimen/detail_body_text_size" />
 
         </com.example.xyzreader.ui.MaxWidthLinearLayout>
