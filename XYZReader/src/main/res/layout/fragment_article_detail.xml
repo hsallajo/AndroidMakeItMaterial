@@ -64,14 +64,14 @@
             </LinearLayout>
 
             <android.support.v7.widget.Toolbar
+                app:theme="@style/Theme.MaterialComponents.Light.DarkActionBar.Bridge"
                 android:id="@+id/detailed_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
                 android:background="@null"
                 app:contentInsetStart="44dp"
                 app:layout_collapseMode="parallax"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+                app:layout_scrollFlags="scroll|enterAlways" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -114,12 +114,12 @@
     </com.example.xyzreader.ui.ObservableScrollView>
 
     <android.support.design.widget.FloatingActionButton
+        style="@style/Widget.MaterialComponents.FloatingActionButton"
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:elevation="6dp"
-        app:rippleColor="@color/colorAccentDark"
-        app:pressedTranslationZ="12dp"
+        app:rippleColor="@android:color/black"
+        app:pressedTranslationZ="24dp"
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
         android:contentDescription="@string/action_share"

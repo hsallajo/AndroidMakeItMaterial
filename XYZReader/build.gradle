@@ -30,7 +30,8 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:support-v4:$androidSupportVersion"
+    implementation "com.android.support:support-compat:$androidSupportVersion"
+    implementation "com.android.support:support-core-ui:$androidSupportVersion"
     implementation "com.android.support:support-v13:$androidSupportVersion"
     implementation "com.android.support:appcompat-v7:$androidSupportVersion"
     implementation "com.android.support:palette-v7:$androidSupportVersion"
