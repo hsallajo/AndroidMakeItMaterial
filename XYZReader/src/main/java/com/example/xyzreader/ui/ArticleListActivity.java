@@ -1,5 +1,6 @@
 package com.example.xyzreader.ui;
 
+import android.app.ActivityOptions;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,7 +10,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-//import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -19,7 +19,6 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.xyzreader.R;
@@ -51,34 +50,57 @@ public class ArticleListActivity extends AppCompatActivity implements
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
+    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
+
+    private BroadcastReceiver mRefreshingReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("kissa", "onCreate: ");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
 
-        final View toolbarContainerView = findViewById(R.id.toolbar_container);
+        //final View toolbarContainerView = findViewById(R.id.toolbar_container);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+
+        //todo
+        mRecyclerView.setAdapter(null);
+
         getLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
             refresh();
         }
+
+        Log.d("kissa", "creating new mRefreshingReceiver ");
+       mRefreshingReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d("kissa", "BroadcastReceiver onReceive: ");
+                if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
+                    mIsRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
+                    Log.d(TAG, "onReceive: mIsRefreshing = " + mIsRefreshing);
+                    updateRefreshingUI();
+                }
+            }
+        };
     }
 
     private void refresh() {
+        Log.d("kissa", "refresh: ");
         startService(new Intent(this, UpdaterService.class));
     }
 
     @Override
     protected void onStart() {
+        Log.d("kissa", "onStart: ");
         super.onStart();
         registerReceiver(mRefreshingReceiver,
                 new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
@@ -86,35 +108,28 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     protected void onStop() {
+        Log.d("kissa", "onStop: ");
         super.onStop();
         unregisterReceiver(mRefreshingReceiver);
     }
 
     private boolean mIsRefreshing = false;
 
-    private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
-                mIsRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
-                updateRefreshingUI();
-            }
-        }
-    };
-
     private void updateRefreshingUI() {
+        Log.d("kissa", "updateRefreshingUI: ");
         mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        Log.d("kissa", "onCreateLoader: ");
         return ArticleLoader.newAllArticlesInstance(this);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        Log.d(TAG, "onLoadFinished: ");
-        Adapter adapter = new Adapter(cursor);
+        Log.d("kissa", "onLoadFinished: ");
+        Adapter adapter = new Adapter(cursor, this);
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
@@ -128,21 +143,24 @@ public class ArticleListActivity extends AppCompatActivity implements
         mRecyclerView.setAdapter(null);
     }
 
-    public void handleShare(View view) {
-        Log.d(TAG, "handleShare: clicked");
-    }
 
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
         private Cursor mCursor;
+        private Context context;
 
-        public Adapter(Cursor cursor) {
-            mCursor = cursor;
+        public Adapter(Cursor cursor, Context context) {
+            this.mCursor = cursor;
+            this.context = context;
         }
 
         @Override
         public long getItemId(int position) {
-            mCursor.moveToPosition(position);
-            return mCursor.getLong(ArticleLoader.Query._ID);
+
+            if (mCursor != null) {
+                mCursor.moveToPosition(position);
+                return mCursor.getLong(ArticleLoader.Query._ID);
+            } else
+                return 0;
         }
 
         @Override
@@ -152,11 +170,21 @@ public class ArticleListActivity extends AppCompatActivity implements
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+                    startTransition(vh);
                 }
             });
             return vh;
+        }
+
+        private void startTransition(ViewHolder viewHolder) {
+            Bundle b = ActivityOptions
+                    .makeSceneTransitionAnimation(ArticleListActivity.this
+                            , viewHolder.thumbnailView
+                            , viewHolder.thumbnailView.getTransitionName())
+                    .toBundle();
+            Intent i = new Intent(Intent.ACTION_VIEW,
+                    ItemsContract.Items.buildItemUri(getItemId(viewHolder.getAdapterPosition())));
+            startActivity(i, b);
         }
 
         private Date parsePublishedDate() {
@@ -164,7 +192,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                 String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
                 return dateFormat.parse(date);
             } catch (ParseException ex) {
-                Log.e(TAG, ex.getMessage());
+                Log.e(TAG, "parsePublishedDate: " + ex.getMessage());
                 Log.i(TAG, "passing today's date");
                 return new Date();
             }
@@ -172,6 +200,9 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
+
+            if(mCursor == null) return;
+
             mCursor.moveToPosition(position);
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             Date publishedDate = parsePublishedDate();
@@ -187,8 +218,8 @@ public class ArticleListActivity extends AppCompatActivity implements
             } else {
                 holder.subtitleView.setText(Html.fromHtml(
                         outputFormat.format(publishedDate)
-                        + "<br/>" + " by "
-                        + mCursor.getString(ArticleLoader.Query.AUTHOR)));
+                                + "<br/>" + " by "
+                                + mCursor.getString(ArticleLoader.Query.AUTHOR)));
             }
             holder.thumbnailView.setImageUrl(
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
@@ -198,7 +229,12 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         @Override
         public int getItemCount() {
-            return mCursor.getCount();
+            if (mCursor != null) {
+                return mCursor.getCount();
+            } else {
+                Log.d("kissa", "getItemCount: ");
+                return 0;
+            }
         }
     }
 
