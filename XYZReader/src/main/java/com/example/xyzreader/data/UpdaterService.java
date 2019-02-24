@@ -40,6 +40,7 @@ public class UpdaterService extends IntentService {
         NetworkInfo ni = cm.getActiveNetworkInfo();
         if (ni == null || !ni.isConnected()) {
             Log.w(TAG, "Not online, not refreshing.");
+            Log.w("kissa", "Not online, not refreshing.");
             return;
         }
 
@@ -74,6 +75,7 @@ public class UpdaterService extends IntentService {
                 cpo.add(ContentProviderOperation.newInsert(dirUri).withValues(values).build());
             }
 
+            Log.d("kissa", "onHandleIntent: writing database");
             getContentResolver().applyBatch(ItemsContract.CONTENT_AUTHORITY, cpo);
 
         } catch (JSONException | RemoteException | OperationApplicationException e) {

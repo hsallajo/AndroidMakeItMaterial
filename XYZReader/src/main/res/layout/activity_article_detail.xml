@@ -6,7 +6,8 @@
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="24dp"/>
+        android:layout_marginTop="24dp"
+        android:transitionGroup="true"/>
 
     <FrameLayout
         android:id="@+id/up_container"

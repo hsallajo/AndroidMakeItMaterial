@@ -39,7 +39,8 @@ import java.util.GregorianCalendar;
  * activity presents a grid of items as cards.
  */
 public class ArticleListActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,
+        SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = ArticleListActivity.class.toString();
     private Toolbar mToolbar;
@@ -66,36 +67,65 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         //final View toolbarContainerView = findViewById(R.id.toolbar_container);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+       /* mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+
+        mSwipeRefreshLayout.setColorSchemeColors(
+                getResources().getColor(android.R.color.holo_blue_bright),
+                getResources().getColor(android.R.color.holo_green_light),
+                getResources().getColor(android.R.color.holo_orange_light),
+                getResources().getColor(android.R.color.holo_red_light)
+        );
+
+        mSwipeRefreshLayout.setOnRefreshListener(this);*/
+
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
-        //todo
         mRecyclerView.setAdapter(null);
 
         getLoaderManager().initLoader(0, null, this);
 
-        if (savedInstanceState == null) {
-            refresh();
+        if(savedInstanceState == null) {
+            //refresh();
+            startRefresh();
         }
 
-        Log.d("kissa", "creating new mRefreshingReceiver ");
-       mRefreshingReceiver = new BroadcastReceiver() {
+        mRefreshingReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.d("kissa", "BroadcastReceiver onReceive: ");
                 if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
+
+                    Log.d("kissa", "onReceive: mIsRefreshing = " + mIsRefreshing);
+
                     mIsRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
-                    Log.d(TAG, "onReceive: mIsRefreshing = " + mIsRefreshing);
                     updateRefreshingUI();
                 }
             }
         };
     }
 
-    private void refresh() {
-        Log.d("kissa", "refresh: ");
-        startService(new Intent(this, UpdaterService.class));
+    private void startRefresh() {
+
+        //mSwipeRefreshLayout.setRefreshing(true);
+
+        // Load data
+        Log.d("kissa", "refresh: kirppu");
+        startService(new Intent(getApplicationContext(), UpdaterService.class));
+
+
+       /* mSwipeRefreshLayout.post(new Runnable() {
+
+            @Override
+            public void run() {
+
+                mSwipeRefreshLayout.setRefreshing(true);
+
+                // Load data
+                Log.d("kissa", "refresh: koira");
+                startService(new Intent(getApplicationContext(), UpdaterService.class));
+            }
+        });*/
+
     }
 
     @Override
@@ -116,8 +146,9 @@ public class ArticleListActivity extends AppCompatActivity implements
     private boolean mIsRefreshing = false;
 
     private void updateRefreshingUI() {
-        Log.d("kissa", "updateRefreshingUI: ");
-        mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
+
+        Log.d("kissa", "updateRefreshingUI (true/false): " + mIsRefreshing);
+        //mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
     }
 
     @Override
@@ -141,6 +172,13 @@ public class ArticleListActivity extends AppCompatActivity implements
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mRecyclerView.setAdapter(null);
+    }
+
+    @Override
+    public void onRefresh() {
+
+        Log.d("kissa", "run: hiiri");
+        startRefresh();
     }
 
 
@@ -201,7 +239,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
 
-            if(mCursor == null) return;
+            if (mCursor == null) return;
 
             mCursor.moveToPosition(position);
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));

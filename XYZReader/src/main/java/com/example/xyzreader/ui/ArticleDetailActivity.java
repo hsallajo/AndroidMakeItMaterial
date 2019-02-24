@@ -85,7 +85,8 @@ public class ArticleDetailActivity extends AppCompatActivity
         mUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onSupportNavigateUp();
+                //onSupportNavigateUp();
+                finishAfterTransition();
             }
         });
 
@@ -139,13 +140,6 @@ public class ArticleDetailActivity extends AppCompatActivity
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mCursor = null;
         mPagerAdapter.notifyDataSetChanged();
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        Log.d("kissa", "onBackPressed: ");
-        finish();
     }
 
 
