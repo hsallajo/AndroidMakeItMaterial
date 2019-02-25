@@ -1,9 +1,7 @@
 package com.example.xyzreader.ui;
 
-import android.app.Fragment;
-import android.app.LoaderManager;
+
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
@@ -17,7 +15,10 @@ import java.util.GregorianCalendar;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
@@ -47,7 +48,6 @@ public class ArticleDetailFragment extends Fragment implements
     private static final String TAG = "ArticleDetailFragment";
 
     public static final String ARG_ITEM_ID = "item_id";
-    private static final float PARALLAX_FACTOR = 1.25f;
 
     private Cursor mCursor;
     private long mItemId;
@@ -58,7 +58,6 @@ public class ArticleDetailFragment extends Fragment implements
 
     private CollapsingToolbarLayout collapsingToolbar;
 
-    private int mTopInset;
     private ImageView mPhotoView;
     private int mScrollY;
     private boolean mIsCard = false;
@@ -97,7 +96,6 @@ public class ArticleDetailFragment extends Fragment implements
         mIsCard = getResources().getBoolean(R.bool.detail_is_card);
         mStatusBarFullOpacityBottom = getResources().getDimensionPixelSize(
                 R.dimen.detail_card_top_margin);
-        //setHasOptionsMenu(true);
     }
 
     public ArticleDetailActivity getActivityCast() {
@@ -112,6 +110,7 @@ public class ArticleDetailFragment extends Fragment implements
         // the fragment's onCreate may cause the same LoaderManager to be dealt to multiple
         // fragments because their mIndex is -1 (haven't been added to the activity yet). Thus,
         // we do this in onActivityCreated.
+        // tbd
         getLoaderManager().initLoader(0, null, this);
 
     }
@@ -162,28 +161,10 @@ public class ArticleDetailFragment extends Fragment implements
         return mRootView;
     }
 
-/*    private void updateStatusBar() {
-        int color = 0;
-        if (mPhotoView != null && mTopInset != 0 && mScrollY > 0) {
-            float f = progress(mScrollY,
-                    mStatusBarFullOpacityBottom - mTopInset * 3,
-                    mStatusBarFullOpacityBottom - mTopInset);
-            color = Color.argb((int) (255 * f),
-                    (int) (Color.red(mMutedColor) * 0.9),
-                    (int) (Color.green(mMutedColor) * 0.9),
-                    (int) (Color.blue(mMutedColor) * 0.9));
-
-            Log.d(TAG, "updateStatusBar: color: " + color);
-        }
-        mStatusBarColorDrawable.setColor(color);
-
-    }*/
-
 private void updateFab() {
 
     int hidey_threshold = getActivity().getResources().getInteger(R.integer.fab_hidey_threshold);
     if (mScrollY > hidey_threshold && fab.isShown()){
-        Log.d(TAG, "updateFab: mScrolly: " + mScrollY);
         fab.hide();
     }
     if( mScrollY <= hidey_threshold && !fab.isShown()){

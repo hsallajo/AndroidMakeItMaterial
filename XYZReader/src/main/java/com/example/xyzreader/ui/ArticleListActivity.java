@@ -1,14 +1,15 @@
 package com.example.xyzreader.ui;
 
 import android.app.ActivityOptions;
-import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -42,7 +43,9 @@ public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
         SwipeRefreshLayout.OnRefreshListener {
 
-    private static final String TAG = ArticleListActivity.class.toString();
+    //private static final String TAG = ArticleListActivity.class.toString();
+    private static final String TAG = "kissa";
+    private static final int XYZ_ARTICLE_LOADER = 222;
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
@@ -57,80 +60,79 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("kissa", "onCreate: ");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = findViewById(R.id.toolbar);
 
+        mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        //final View toolbarContainerView = findViewById(R.id.toolbar_container);
-
-       /* mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-
-        mSwipeRefreshLayout.setColorSchemeColors(
-                getResources().getColor(android.R.color.holo_blue_bright),
-                getResources().getColor(android.R.color.holo_green_light),
-                getResources().getColor(android.R.color.holo_orange_light),
-                getResources().getColor(android.R.color.holo_red_light)
-        );
-
-        mSwipeRefreshLayout.setOnRefreshListener(this);*/
-
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
+        mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setAdapter(null);
 
-        getLoaderManager().initLoader(0, null, this);
-
         if(savedInstanceState == null) {
-            //refresh();
-            startRefresh();
+            Log.d(TAG, "onCreate: savedInstanceState == null");
+            mSwipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    onRefresh();
+                }
+            });
+        }
+        else {
+            Log.d(TAG, "onCreate: savedInstanceState != null");
+            mSwipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    loadData();
+                }
+            });
         }
 
         mRefreshingReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                Log.d(TAG, "onReceive: ");
                 if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
 
-                    Log.d("kissa", "onReceive: mIsRefreshing = " + mIsRefreshing);
+                    boolean status = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
 
-                    mIsRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
-                    updateRefreshingUI();
+                    if(!mIsRefreshing && !status)
+                        return;
+
+                    if (!mIsRefreshing && status){
+                        mIsRefreshing = true;
+                        return;
+                    }
+                    if (mIsRefreshing && !status){
+                        mIsRefreshing = false;
+                        Log.d(TAG, "onReceive: loading data");
+                        loadData();
+                    }
+
                 }
             }
         };
     }
 
-    private void startRefresh() {
+    private void loadData(){
 
-        //mSwipeRefreshLayout.setRefreshing(true);
-
-        // Load data
-        Log.d("kissa", "refresh: kirppu");
-        startService(new Intent(getApplicationContext(), UpdaterService.class));
-
-
-       /* mSwipeRefreshLayout.post(new Runnable() {
-
-            @Override
-            public void run() {
-
-                mSwipeRefreshLayout.setRefreshing(true);
-
-                // Load data
-                Log.d("kissa", "refresh: koira");
-                startService(new Intent(getApplicationContext(), UpdaterService.class));
-            }
-        });*/
-
+        if(getSupportLoaderManager().getLoader(XYZ_ARTICLE_LOADER) == null) {
+            Log.d(TAG, "loadData: init");
+            getSupportLoaderManager().initLoader(XYZ_ARTICLE_LOADER, null, ArticleListActivity.this);
+        } else {
+            Log.d(TAG, "loadData: restart");
+            getSupportLoaderManager().restartLoader(XYZ_ARTICLE_LOADER, null, ArticleListActivity.this);
+        }
     }
 
     @Override
     protected void onStart() {
-        Log.d("kissa", "onStart: ");
+        Log.d(TAG, "onStart: ");
         super.onStart();
         registerReceiver(mRefreshingReceiver,
                 new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
@@ -138,28 +140,42 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     protected void onStop() {
-        Log.d("kissa", "onStop: ");
+        Log.d(TAG, "onStop: ");
         super.onStop();
         unregisterReceiver(mRefreshingReceiver);
     }
 
-    private boolean mIsRefreshing = false;
-
-    private void updateRefreshingUI() {
-
-        Log.d("kissa", "updateRefreshingUI (true/false): " + mIsRefreshing);
-        //mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause: ");
+        super.onPause();
     }
 
     @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
+    }
+
+    @Override
+    protected void onRestart() {
+        Log.d(TAG, "onRestart: ");
+        super.onRestart();
+    }
+
+    private boolean mIsRefreshing = false;
+
+    @NonNull
+    @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        Log.d("kissa", "onCreateLoader: ");
+        Log.d(TAG, "onCreateLoader: ");
         return ArticleLoader.newAllArticlesInstance(this);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        Log.d("kissa", "onLoadFinished: ");
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
+        Log.d(TAG, "onLoadFinished: ");
+
         Adapter adapter = new Adapter(cursor, this);
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
@@ -167,6 +183,8 @@ public class ArticleListActivity extends AppCompatActivity implements
         StaggeredGridLayoutManager sglm =
                 new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(sglm);
+
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -176,9 +194,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     public void onRefresh() {
-
-        Log.d("kissa", "run: hiiri");
-        startRefresh();
+        startService(new Intent(getApplicationContext(), UpdaterService.class));
     }
 
 
@@ -270,7 +286,6 @@ public class ArticleListActivity extends AppCompatActivity implements
             if (mCursor != null) {
                 return mCursor.getCount();
             } else {
-                Log.d("kissa", "getItemCount: ");
                 return 0;
             }
         }
@@ -278,14 +293,12 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public DynamicHeightNetworkImageView thumbnailView;
-        //public ImageView thumbnailView;
         public TextView titleView;
         public TextView subtitleView;
 
         public ViewHolder(View view) {
             super(view);
             thumbnailView = (DynamicHeightNetworkImageView) view.findViewById(R.id.thumbnail);
-            //thumbnailView = (ImageView) view.findViewById(R.id.thumbnail);
             titleView = (TextView) view.findViewById(R.id.article_title);
             subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
         }
