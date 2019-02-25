@@ -208,8 +208,10 @@ public class ArticleListActivity extends AppCompatActivity implements
         Log.d(TAG, "onSaveInstanceState: ");
         super.onSaveInstanceState(state);
 
-        mMainListState = mGridLayoutManager.onSaveInstanceState();
-        state.putParcelable(MAIN_LIST_STATE_KEY, mMainListState);
+        if(mGridLayoutManager != null) {
+            mMainListState = mGridLayoutManager.onSaveInstanceState();
+            state.putParcelable(MAIN_LIST_STATE_KEY, mMainListState);
+        }
     }
 
     protected void onRestoreInstanceState(Bundle state) {
