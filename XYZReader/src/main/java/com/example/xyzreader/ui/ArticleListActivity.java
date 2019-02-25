@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -46,6 +47,7 @@ public class ArticleListActivity extends AppCompatActivity implements
     //private static final String TAG = ArticleListActivity.class.toString();
     private static final String TAG = "kissa";
     private static final int XYZ_ARTICLE_LOADER = 222;
+    public static final String MAIN_LIST_STATE_KEY = "main_list_state_key";
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
@@ -57,6 +59,8 @@ public class ArticleListActivity extends AppCompatActivity implements
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
     private BroadcastReceiver mRefreshingReceiver;
+    private StaggeredGridLayoutManager mGridLayoutManager;
+    private Parcelable mMainListState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,10 +184,13 @@ public class ArticleListActivity extends AppCompatActivity implements
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
-        StaggeredGridLayoutManager sglm =
-                new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(sglm);
 
+        mGridLayoutManager = new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
+        if (mMainListState != null) {
+            mGridLayoutManager.onRestoreInstanceState(mMainListState);
+        }
+
+        mRecyclerView.setLayoutManager(mGridLayoutManager);
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
@@ -195,6 +202,23 @@ public class ArticleListActivity extends AppCompatActivity implements
     @Override
     public void onRefresh() {
         startService(new Intent(getApplicationContext(), UpdaterService.class));
+    }
+
+    protected void onSaveInstanceState(Bundle state) {
+        Log.d(TAG, "onSaveInstanceState: ");
+        super.onSaveInstanceState(state);
+
+        mMainListState = mGridLayoutManager.onSaveInstanceState();
+        state.putParcelable(MAIN_LIST_STATE_KEY, mMainListState);
+    }
+
+    protected void onRestoreInstanceState(Bundle state) {
+        Log.d(TAG, "onRestoreInstanceState: ");
+        super.onRestoreInstanceState(state);
+
+        // Retrieve list state and list/item positions
+        if(state != null)
+            mMainListState = state.getParcelable(MAIN_LIST_STATE_KEY);
     }
 
 
