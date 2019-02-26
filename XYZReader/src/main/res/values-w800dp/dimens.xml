@@ -2,9 +2,12 @@
 <resources>
     <!-- detail -->
     <dimen name="detail_card_max_width">704dp</dimen>
+    <dimen name="detail_title_margin_start">64dp</dimen>
+    <dimen name="detail_body_text_size">22sp</dimen>
 
     <!-- list -->
     <dimen name="list_side_margin">64dp</dimen>
     <dimen name="list_toolbar_side_margin">52dp</dimen> <!-- minus 64 - 12 -->
-    <!--<dimen name="list_header_height">144dp</dimen>-->
+    <dimen name="list_header_height">120dp</dimen>
+
 </resources>

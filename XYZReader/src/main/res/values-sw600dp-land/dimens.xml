@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- detail -->
-    <dimen name="detail_photo_height">600dp</dimen>
+    <dimen name="detail_photo_height">384dp</dimen>
+    <dimen name="detail_title_text_size_large">32sp</dimen>
+    <dimen name="detail_body_text_size">22sp</dimen>
 
     <!-- list -->
-    <!--<dimen name="list_header_height">144dp</dimen>-->
+    <dimen name="list_header_height">120dp</dimen>
 </resources>

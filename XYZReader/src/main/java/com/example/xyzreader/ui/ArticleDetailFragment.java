@@ -17,6 +17,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
@@ -50,7 +51,7 @@ public class ArticleDetailFragment extends Fragment implements
     private Cursor mCursor;
     private long mItemId;
     private View mRootView;
-    private int mMutedColor = 0xFF333333;
+    private int mPaletteColor = 0xFF333333;
     private ObservableScrollView mScrollView;
 
     private CollapsingToolbarLayout collapsingToolbar;
@@ -242,13 +243,15 @@ private void updateFab() {
                             Bitmap bitmap = imageContainer.getBitmap();
                             if (bitmap != null) {
                                 Palette p = Palette.generate(bitmap, 12);
-                                mMutedColor = p.getDarkVibrantColor(0xFF333333);
+                                mPaletteColor = p.getDarkVibrantColor(0xFF333333);
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
+
+                                mPaletteColor = ColorUtils.setAlphaComponent(mPaletteColor, 225);
                                 mRootView.findViewById(R.id.meta_bar)
-                                        .setBackgroundColor(mMutedColor);
+                                        .setBackgroundColor(mPaletteColor);
 
                                 if(collapsingToolbar != null) {
-                                    collapsingToolbar.setContentScrimColor(mMutedColor);
+                                    collapsingToolbar.setContentScrimColor(mPaletteColor);
                                 }
                             }
                         }
