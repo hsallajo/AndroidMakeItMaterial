@@ -15,13 +15,13 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
@@ -44,11 +44,9 @@ public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
         SwipeRefreshLayout.OnRefreshListener {
 
-    //private static final String TAG = ArticleListActivity.class.toString();
-    private static final String TAG = "kissa";
+    private static final String TAG = ArticleListActivity.class.toString();
     private static final int XYZ_ARTICLE_LOADER = 222;
     public static final String MAIN_LIST_STATE_KEY = "main_list_state_key";
-    private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
 
@@ -68,16 +66,13 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
-        mToolbar = findViewById(R.id.toolbar);
-
         mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setAdapter(null);
 
-        if(savedInstanceState == null) {
-            Log.d(TAG, "onCreate: savedInstanceState == null");
+        if (savedInstanceState == null) {
             mSwipeRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
@@ -85,9 +80,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                     onRefresh();
                 }
             });
-        }
-        else {
-            Log.d(TAG, "onCreate: savedInstanceState != null");
+        } else {
             mSwipeRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
@@ -100,21 +93,29 @@ public class ArticleListActivity extends AppCompatActivity implements
         mRefreshingReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.d(TAG, "onReceive: ");
+                if (UpdaterService.BROADCAST_ACTION_IS_ONLINE.equals(intent.getAction())) {
+
+                    boolean serviceNotOnline = intent.getBooleanExtra(UpdaterService.EXTRA_NOT_ONLINE, false);
+                    if (serviceNotOnline) {
+                        /* Device is offline so use existing data*/
+                        Toast.makeText(ArticleListActivity.this, "Not online", Toast.LENGTH_SHORT).show();
+                        loadData();
+                    }
+                }
+
                 if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
 
-                    boolean status = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
+                    boolean serviceRefreshStatus = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
 
-                    if(!mIsRefreshing && !status)
+                    if (!mIsRefreshing && !serviceRefreshStatus)
                         return;
 
-                    if (!mIsRefreshing && status){
+                    if (!mIsRefreshing && serviceRefreshStatus) {
                         mIsRefreshing = true;
                         return;
                     }
-                    if (mIsRefreshing && !status){
+                    if (mIsRefreshing && !serviceRefreshStatus) {
                         mIsRefreshing = false;
-                        Log.d(TAG, "onReceive: loading data");
                         loadData();
                     }
 
@@ -123,48 +124,29 @@ public class ArticleListActivity extends AppCompatActivity implements
         };
     }
 
-    private void loadData(){
+    private void loadData() {
 
-        if(getSupportLoaderManager().getLoader(XYZ_ARTICLE_LOADER) == null) {
-            Log.d(TAG, "loadData: init");
+        if (getSupportLoaderManager().getLoader(XYZ_ARTICLE_LOADER) == null) {
             getSupportLoaderManager().initLoader(XYZ_ARTICLE_LOADER, null, ArticleListActivity.this);
         } else {
-            Log.d(TAG, "loadData: restart");
             getSupportLoaderManager().restartLoader(XYZ_ARTICLE_LOADER, null, ArticleListActivity.this);
         }
     }
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart: ");
         super.onStart();
         registerReceiver(mRefreshingReceiver,
                 new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
+
+        registerReceiver(mRefreshingReceiver,
+                new IntentFilter(UpdaterService.BROADCAST_ACTION_IS_ONLINE));
     }
 
     @Override
     protected void onStop() {
-        Log.d(TAG, "onStop: ");
         super.onStop();
         unregisterReceiver(mRefreshingReceiver);
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d(TAG, "onPause: ");
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        Log.d(TAG, "onResume: ");
-        super.onResume();
-    }
-
-    @Override
-    protected void onRestart() {
-        Log.d(TAG, "onRestart: ");
-        super.onRestart();
     }
 
     private boolean mIsRefreshing = false;
@@ -172,15 +154,13 @@ public class ArticleListActivity extends AppCompatActivity implements
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        Log.d(TAG, "onCreateLoader: ");
         return ArticleLoader.newAllArticlesInstance(this);
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        Log.d(TAG, "onLoadFinished: ");
 
-        Adapter adapter = new Adapter(cursor, this);
+        Adapter adapter = new Adapter(cursor);
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
@@ -208,7 +188,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         Log.d(TAG, "onSaveInstanceState: ");
         super.onSaveInstanceState(state);
 
-        if(mGridLayoutManager != null) {
+        if (mGridLayoutManager != null) {
             mMainListState = mGridLayoutManager.onSaveInstanceState();
             state.putParcelable(MAIN_LIST_STATE_KEY, mMainListState);
         }
@@ -219,18 +199,16 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onRestoreInstanceState(state);
 
         // Retrieve list state and list/item positions
-        if(state != null)
+        if (state != null)
             mMainListState = state.getParcelable(MAIN_LIST_STATE_KEY);
     }
 
 
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
         private Cursor mCursor;
-        private Context context;
 
-        public Adapter(Cursor cursor, Context context) {
+        public Adapter(Cursor cursor) {
             this.mCursor = cursor;
-            this.context = context;
         }
 
         @Override

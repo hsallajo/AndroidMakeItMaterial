@@ -77,12 +77,12 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-
+<!--        android:fillViewport="true"-->
     <com.example.xyzreader.ui.ObservableScrollView
         android:id="@+id/scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
+
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <com.example.xyzreader.ui.MaxWidthLinearLayout
@@ -127,4 +127,6 @@
         android:stateListAnimator="@animator/fab_state_list_anim"
         android:src="@drawable/ic_share"
         android:background="@drawable/oval_ripple"/>
+
 </android.support.design.widget.CoordinatorLayout>
+
