@@ -5,7 +5,7 @@
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="192dp"
+        android:layout_height="@dimen/list_header_height"
         android:background="@color/colorPrimary">
 
         <android.support.design.widget.CollapsingToolbarLayout
@@ -20,8 +20,8 @@
                 app:layout_collapseMode="parallax"
                 android:scaleType="fitCenter"
                 android:src="@drawable/logo"
-                android:paddingStart="32dp"
-                android:paddingEnd="32dp"
+                android:paddingStart="@dimen/list_logo_horizontal_padding"
+                android:paddingEnd="@dimen/list_logo_horizontal_padding"
                 android:contentDescription="@string/app_name"/>
 
             <android.support.v7.widget.Toolbar
@@ -48,7 +48,7 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:scrollbarStyle="outsideOverlay"
-            android:paddingTop="24dp"
+            android:paddingTop="@dimen/list_padding_top"
             android:paddingLeft="@dimen/list_side_margin"
             android:paddingRight="@dimen/list_side_margin"
             android:paddingBottom="24dp" />

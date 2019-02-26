@@ -51,4 +51,10 @@
             @transition/detailed_enter</item>
     </style>
 
+    <style name="XYZFloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="rippleColor">@color/colorPrimaryDarkest</item>
+        <item name="pressedTranslationZ">@dimen/fab_press_translation_z</item>
+    </style>
+
 </resources>
