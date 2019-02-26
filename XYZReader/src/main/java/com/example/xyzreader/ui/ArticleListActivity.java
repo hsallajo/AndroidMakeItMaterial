@@ -97,7 +97,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
                     boolean serviceNotOnline = intent.getBooleanExtra(UpdaterService.EXTRA_NOT_ONLINE, false);
                     if (serviceNotOnline) {
-                        /* Device is offline so use existing data*/
+                        /* Device is offline, use existing data*/
                         Toast.makeText(ArticleListActivity.this, "Not online", Toast.LENGTH_SHORT).show();
                         loadData();
                     }
@@ -185,7 +185,6 @@ public class ArticleListActivity extends AppCompatActivity implements
     }
 
     protected void onSaveInstanceState(Bundle state) {
-        Log.d(TAG, "onSaveInstanceState: ");
         super.onSaveInstanceState(state);
 
         if (mGridLayoutManager != null) {
@@ -195,7 +194,6 @@ public class ArticleListActivity extends AppCompatActivity implements
     }
 
     protected void onRestoreInstanceState(Bundle state) {
-        Log.d(TAG, "onRestoreInstanceState: ");
         super.onRestoreInstanceState(state);
 
         // Retrieve list state and list/item positions
