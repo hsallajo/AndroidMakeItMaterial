@@ -70,6 +70,7 @@
                         style="?android:attr/textAppearanceSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textSize="@dimen/detail_article_by_line_text_size"
                         android:layout_marginStart="@dimen/detail_title_margin_start"
                         android:textColor="#8fff" />
                 </LinearLayout>

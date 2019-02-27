@@ -7,7 +7,7 @@
     <dimen name="detail_title_text_size_large">30sp</dimen>
     <dimen name="detail_body_text_size">18sp</dimen>
     <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
-    <dimen name="detail_inner_horiz_margin">16dp</dimen>
+    <dimen name="detail_inner_horiz_margin">24dp</dimen>
     <dimen name="detail_toolbar_inset_start">44dp</dimen>
 
     <dimen name="detail_photo_height">344dp</dimen>
@@ -17,6 +17,7 @@
     <dimen name="detail_body_top_margin">24dp</dimen>
     <dimen name="detail_body_bottom_margin">88dp</dimen>
     <dimen name="detail_title_margin_start">0dp</dimen>
+    <dimen name="detail_article_by_line_text_size">14sp</dimen>
 
 
     <!-- list -->
