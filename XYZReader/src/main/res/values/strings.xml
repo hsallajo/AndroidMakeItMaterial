@@ -12,5 +12,6 @@
     <string name="share_comment">Just wanted to share you this great article:</string>
     <string name="share_comment_date">Date:</string>
     <string name="share_dialog_title">Share the article</string>
+    <string name="msg_database_query_no_result">No results</string>
 
 </resources>

@@ -160,6 +160,11 @@ public class ArticleListActivity extends AppCompatActivity implements
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
 
+        if(cursor.getCount() != 0){
+            TextView tv = findViewById(R.id.tv_no_results);
+            tv.setVisibility(View.GONE);
+        }
+
         Adapter adapter = new Adapter(cursor);
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
