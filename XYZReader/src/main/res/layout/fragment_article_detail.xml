@@ -7,8 +7,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/detailed_appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary">
+        android:layout_height="wrap_content">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/detailed_collapsing_toolbar_layout"
@@ -100,7 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="#fff"
+            android:background="@android:color/white"
             android:elevation="4dp"
             android:maxWidth="@dimen/detail_card_max_width"
             android:orientation="vertical">
@@ -116,7 +115,6 @@
                 android:paddingTop="@dimen/detail_body_top_margin"
                 android:paddingBottom="@dimen/detail_body_bottom_margin"
                 android:textColor="@color/colorSecondaryText"
-                android:textColorLink="@color/colorAccent"
                 android:textSize="@dimen/detail_body_text_size" />
 
         </com.example.xyzreader.ui.MaxWidthLinearLayout>

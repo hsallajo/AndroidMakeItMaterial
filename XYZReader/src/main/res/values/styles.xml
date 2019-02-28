@@ -52,8 +52,7 @@
     </style>
 
     <style name="XYZFloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
-        <item name="colorAccent">@color/colorPrimary</item>
-        <item name="rippleColor">@color/colorPrimaryDarkest</item>
+        <item name="rippleColor">@color/colorAccentDark</item>
         <item name="pressedTranslationZ">@dimen/fab_press_translation_z</item>
     </style>
 
