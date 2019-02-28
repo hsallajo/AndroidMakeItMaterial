@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
-    <slide
+    <fade
         android:duration="500"
         android:interpolator="@android:interpolator/linear_out_slow_in"
         android:slideEdge="start">
@@ -9,5 +9,5 @@
             <target android:excludeId="@android:id/navigationBarBackground"/>
             <target android:excludeId="@id/toolbar"/>
         </targets>
-    </slide>
+    </fade>
 </transitionSet>
