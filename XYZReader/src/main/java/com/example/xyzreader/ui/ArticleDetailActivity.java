@@ -12,6 +12,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
@@ -46,6 +48,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mPagerAdapter);
+        mPager.setPageTransformer(true, new CustomPageTransformer());
 
         mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
@@ -140,6 +143,30 @@ public class ArticleDetailActivity extends AppCompatActivity
         @Override
         public int getCount() {
             return (mCursor != null) ? mCursor.getCount() : 0;
+        }
+    }
+
+    public class CustomPageTransformer implements ViewPager.PageTransformer {
+
+        public void transformPage(View view, float position) {
+
+            int pageWidth = view.getWidth();
+            ImageView iv = view.findViewById(R.id.photo);
+
+            if (position < -1) { // [-Infinity,-1)
+                // This page is way off-screen to the left.
+                view.setAlpha(0f);
+
+            } else if (position <= 1) { // [-1,1]
+
+                iv.setTranslationX(-position * (pageWidth / 2)); //Half the normal speed
+
+            } else { // (1,+Infinity]
+                // This page is way off-screen to the right.
+                view.setAlpha(0f);
+            }
+
+
         }
     }
 }
